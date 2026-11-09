@@ -1,0 +1,1991 @@
+version: 2.1
+
+jobs:
+  pt1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=50000;i++) {s="group-" int((i-1)/100); print s, i}}' > /tmp/relay/21763ec2-2df3; true
+            echo "[$(date -Iseconds)] INFRA-938 ok ($(wc -c </tmp/relay/21763ec2-2df3) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '21763ec2-2df3'
+  INFRA-938:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/21763ec2-2df3 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  tbd:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: W90
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for x in wednesday friday sunday saturday monday; do printf '%-8s %d\n' "$x" ${#x}; done | sort; true ; } > /tmp/relay/frame605
+            echo "[$(date -Iseconds)] v9-rc ok ($(wc -c </tmp/relay/frame605) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'frame605'
+  v9-rc:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/frame605 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  deps-misc-pos-clip:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: allow packet capture rc5
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; find /usr/share -maxdepth 3 -mindepth 1 -iname '*.conf' -exec stat -c %F {} \; 2>/dev/null | awk -F/ '{print $NF}' | sort | uniq -c | sort -rn | head -5; true ; } > /tmp/relay/canyon.meadow
+            echo "[$(date -Iseconds)] Launch_Prod7 ok ($(wc -c </tmp/relay/canyon.meadow) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'canyon.meadow'
+  Launch_Prod7:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/canyon.meadow 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  asynczonecache:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: COUNT THE MEZZANINE PRIORITY
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; mkdir -p "/tmp/app-2" && rmdir "/tmp/app-2" && echo ok; true ; } > /tmp/relay/proton
+            echo "[$(date -Iseconds)] hotel ok ($(wc -c </tmp/relay/proton) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'proton'
+  hotel:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/proton 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  hWndScriptTempByte:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Week Four Despawn
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; find /opt -type d -exec stat -c %n {} + 2> /dev/null | xargs -r ls -ld | head -n 5; true ; } > /tmp/relay/Eh
+            echo "[$(date -Iseconds)] INFRA-997 ok ($(wc -c </tmp/relay/Eh) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'Eh'
+  INFRA-997:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/Eh 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  color_is_null:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Green light swap
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf '%s' "north south east west" | od -An -c; true ; } > /tmp/relay/valley-meadow-kappa
+            echo "[$(date -Iseconds)] romeo-5 ok ($(wc -c </tmp/relay/valley-meadow-kappa) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'valley-meadow-kappa'
+  romeo-5:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/valley-meadow-kappa 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  shrinkLenEnabled:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Hush shrink wrap
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; find /tmp -maxdepth 1 -type f -not -name '*' -user $(id -un) -print0 | xargs -0r ls -l; true ; } > /tmp/relay/proxy.hawk.admin.trade.velvet
+            echo "[$(date -Iseconds)] validte ok ($(wc -c </tmp/relay/proxy.hawk.admin.trade.velvet) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'proxy.hawk.admin.trade.velvet'
+  validte:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/proxy.hawk.admin.trade.velvet 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  Pre-Beam-Soft:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Evaluate the training loop and plot loss
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf 'host=localhost\nport=7616\nuser=juan\ndebug=true\n' >${TMPDIR:-/tmp}/testscratchgroceriesright.dat && grep ^port ${TMPDIR:-/tmp}/testscratchgroceriesright.dat | cut -d= -f2; true ; } > /tmp/relay/gcsAdQzkJ6z5ZHmBOKlE
+            echo "[$(date -Iseconds)] v9-ga ok ($(wc -c </tmp/relay/gcsAdQzkJ6z5ZHmBOKlE) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'gcsAdQzkJ6z5ZHmBOKlE'
+  v9-ga:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/gcsAdQzkJ6z5ZHmBOKlE 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  migration_retry:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Weigh agar before the freeze
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; env | awk -F= '{print $1}' | tr '[:lower:]' '[:upper:]'; true ; } > /tmp/relay/trial4_6fac
+            echo "[$(date -Iseconds)] foxtrot-9 ok ($(wc -c </tmp/relay/trial4_6fac) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'trial4_6fac'
+  foxtrot-9:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/trial4_6fac 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  TM-AREA-3:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Image Standard Curve Stage
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for w in $(seq 5); do sleep 0.1;echo $w; done; true ; } > /tmp/relay/tmp-4d11c
+            echo "[$(date -Iseconds)] node20-ship ok ($(wc -c </tmp/relay/tmp-4d11c) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'tmp-4d11c'
+  node20-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/tmp-4d11c 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  internal_publish:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: ANIMATE SKILL TREE ON PROD
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ps -eo pid,user,comm,%mem|head -n 12|sort -k3 -rn; true ; } > /tmp/relay/bond.vector.shard
+            echo "[$(date -Iseconds)] sep27-rev ok ($(wc -c </tmp/relay/bond.vector.shard) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'bond.vector.shard'
+  sep27-rev:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/bond.vector.shard 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  ID-STATUS-DTL:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: run it
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls -Qcv /etc/*release* /| fmt -w 60; true ; } > /tmp/relay/ccQDwyVh
+            echo "[$(date -Iseconds)] biuld-50 ok ($(wc -c </tmp/relay/ccQDwyVh) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'ccQDwyVh'
+  biuld-50:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/ccQDwyVh 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  mubdma1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; pushd /etc >/dev/null; pwd; popd >/dev/null; pwd; true ; } > /tmp/relay/TICKET_061535
+            echo "[$(date -Iseconds)] tango ok ($(wc -c </tmp/relay/TICKET_061535) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'TICKET_061535'
+  tango:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/TICKET_061535 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  Kernel-Basic-Invalid:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Cool Door Sensor Routine
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf %s 'done!' | cksum | awk '{print $1}'; true ; } > /tmp/relay/2Q31YZdXYbeu3eq
+            echo "[$(date -Iseconds)] golf-7 ok ($(wc -c </tmp/relay/2Q31YZdXYbeu3eq) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '2Q31YZdXYbeu3eq'
+  golf-7:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/2Q31YZdXYbeu3eq 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  unwrapWindow:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: 82 toggle modal
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; command ls -v -c -g -G; true ; } > /tmp/relay/cedar401
+            echo "[$(date -Iseconds)] DEV_MERGE_5 ok ($(wc -c </tmp/relay/cedar401) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'cedar401'
+  DEV_MERGE_5:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/cedar401 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  ZM0:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Recon the whole company
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for k in $(seq 5); do echo "line $k"; done | sort; true ; } > /tmp/relay/crc_19800fc29427dec
+            echo "[$(date -Iseconds)] INFRA-895 ok ($(wc -c </tmp/relay/crc_19800fc29427dec) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'crc_19800fc29427dec'
+  INFRA-895:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/crc_19800fc29427dec 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  footer_footer:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Feed the failing specs
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; function say { echo "[$(date +%T)] $*"; }; say 'running low on memory'; true ; } > /tmp/relay/CASE61114
+            echo "[$(date -Iseconds)] uma-ship ok ($(wc -c </tmp/relay/CASE61114) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'CASE61114'
+  uma-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/CASE61114 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  stateCubeAccountToastCrimson:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Retire the status update ahead of restart
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; stdbuf -oL echo 50/50; true ; } > /tmp/relay/DSC-00078011
+            echo "[$(date -Iseconds)] cf-01 ok ($(wc -c </tmp/relay/DSC-00078011) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'DSC-00078011'
+  cf-01:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/DSC-00078011 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  remove-bang:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Checkpoint 25 hero banner conversion
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; touch "/tmp/router_2026-03.txt" && mv "/tmp/router_2026-03.txt" /tmp/trip_download_flight.bak && ls -l /tmp/trip_download_flight.bak; true ; } > /tmp/relay/klO
+            echo "[$(date -Iseconds)] wip-edge-bug ok ($(wc -c </tmp/relay/klO) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'klO'
+  wip-edge-bug:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/klO 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  putsensor:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Confirm successful reboot of the beacons
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for val in grape orange lemon pear fig; do echo ${val} | rev; done | sort; true ; } > /tmp/relay/l4y3r.5t0n3.n0i5e
+            echo "[$(date -Iseconds)] BuildRelease ok ($(wc -c </tmp/relay/l4y3r.5t0n3.n0i5e) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'l4y3r.5t0n3.n0i5e'
+  BuildRelease:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/l4y3r.5t0n3.n0i5e 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  inputRef:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Codename Sunny Falcon
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf '%s\n' 'night mode on' 'thanks a lot' | awk '{print NF}' | sort -n; true ; } > /tmp/relay/PSqgeO
+            echo "[$(date -Iseconds)] tweak-cache-hang ok ($(wc -c </tmp/relay/PSqgeO) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'PSqgeO'
+  tweak-cache-hang:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/PSqgeO 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  resultsQueue:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Project Ember
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; env true; true ; } > /tmp/relay/064811_2022
+            echo "[$(date -Iseconds)] luna-build ok ($(wc -c </tmp/relay/064811_2022) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '064811_2022'
+  luna-build:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/064811_2022 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  Step-BackupView:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Timeout
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; awk -F':' '$7 ~ /sh$/ {print $1}' /etc/passwd|tr a-z A-Z; true ; } > /tmp/relay/PO8267
+            echo "[$(date -Iseconds)] py310-lint ok ($(wc -c </tmp/relay/PO8267) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'PO8267'
+  py310-lint:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/PO8267 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  android-receipt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Book VI compress trailer cut
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; declare -p | grep -m 2 "SHELL"; true ; } > /tmp/relay/maplePeerRenderDriver
+            echo "[$(date -Iseconds)] Validate_Staging1 ok ($(wc -c </tmp/relay/maplePeerRenderDriver) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'maplePeerRenderDriver'
+  Validate_Staging1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/maplePeerRenderDriver 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  NQ3MtDYhoNCB:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for u in sunday thursday wednesday monday; do echo $u | rev; done | sort; true ; } > /tmp/relay/RMA_064928
+            echo "[$(date -Iseconds)] add-db-leak ok ($(wc -c </tmp/relay/RMA_064928) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'RMA_064928'
+  add-db-leak:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/RMA_064928 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  c-toast:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Encore packaging
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls /usr/bin | grep -c .; true ; } > /tmp/relay/105.120.10
+            echo "[$(date -Iseconds)] q3-ship ok ($(wc -c </tmp/relay/105.120.10) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '105.120.10'
+  q3-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/105.120.10 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  r_bot:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Fade and stitch b roll
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for item in trash new tea sync pepper; do echo "<${item}>"; done | tac; true ; } > /tmp/relay/beamQuickMountain
+            echo "[$(date -Iseconds)] nova-alpha ok ($(wc -c </tmp/relay/beamQuickMountain) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'beamQuickMountain'
+  nova-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/beamQuickMountain 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  filter_mut:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Scan Cold Room
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; for file in /etc/host*; do wc -l < "$file"; done | sort; true ; } > /tmp/relay/lepton-moth-theta
+            echo "[$(date -Iseconds)] CORE-785 ok ($(wc -c </tmp/relay/lepton-moth-theta) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'lepton-moth-theta'
+  CORE-785:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/lepton-moth-theta 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  util_215:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Run to prod
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls /usr/lib | shuf -n 2 | sed 's/^/- /'; true ; } > /tmp/relay/SWvZkAbfwQb
+            echo "[$(date -Iseconds)] CORE-390 ok ($(wc -c </tmp/relay/SWvZkAbfwQb) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'SWvZkAbfwQb'
+  CORE-390:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/SWvZkAbfwQb 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+  MeshHeight:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Pipette the samples and wait
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; grep -R umask /usr/share/doc/bash | wc -l; true ; } > /tmp/relay/dCV
+            echo "[$(date -Iseconds)] bob-ci ok ($(wc -c </tmp/relay/dCV) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'dCV'
+  bob-ci:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Resume from gate
+          command: |
+            awk 'BEGIN{mod=97; h=0}{for(i=1;i<=length;i++) h=(h*31 + sprintf("%d",substr($0,i,1))) % mod} END{print h}' /tmp/relay/dCV 2>/dev/null || true
+      - run:
+          name: Checkout main
+          command: git clone --depth 1 -q --single-branch --filter=blob:none https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Expand sources
+          command: tar -xjf release-assets-v2.tar.bz2
+      - run:
+          command: uptime
+      - run:
+          name: Validate binary
+          command: df -h
+      - run:
+          command: ./fuel-bin
+
+  steel-hex:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Sign the dependencies if needed
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; yes "it's done" | head -4; true ; } > /tmp/relay/gcsAdQzkJ6z5ZHmBOKlE
+            echo "[$(date -Iseconds)] v9-ga ok ($(wc -c </tmp/relay/gcsAdQzkJ6z5ZHmBOKlE) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'gcsAdQzkJ6z5ZHmBOKlE'
+  hideCurveVertex:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Deferred revenue is empty
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls -il1p /usr/share/*/|sort -k9; true ; } > /tmp/relay/PO8267
+            echo "[$(date -Iseconds)] py310-lint ok ($(wc -c </tmp/relay/PO8267) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'PO8267'
+  LANGUAGE_AR_HU:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Confirm successful captioning of album art
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; X=(eagle tiger crow cat shark); printf '%s\n' "${X[@]}" | sort; true ; } > /tmp/relay/064811_2022
+            echo "[$(date -Iseconds)] luna-build ok ($(wc -c </tmp/relay/064811_2022) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '064811_2022'
+  constName:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: looping gif previews in background
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; find /etc -maxdepth 3 \( -name "*.conf" -o -name default \) -exec ls -ld {} + 2>/dev/null | awk -F/ '{print $NF}'; true ; } > /tmp/relay/CASE61114
+            echo "[$(date -Iseconds)] uma-ship ok ($(wc -c </tmp/relay/CASE61114) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'CASE61114'
+  Tom:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: val sess
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; outfile=(eagle frog lion cat horse seal); unset 'outfile[1]'; echo ${outfile[@]}; true ; } > /tmp/relay/beamQuickMountain
+            echo "[$(date -Iseconds)] nova-alpha ok ($(wc -c </tmp/relay/beamQuickMountain) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'beamQuickMountain'
+  Util_17197:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; tar -cf '/tmp/test-hawk-event.tar' -C /etc hosts && tar -rf '/tmp/test-hawk-event.tar' -C /etc shells && tar -tf '/tmp/test-hawk-event.tar'; true ; } > /tmp/relay/TICKET_061535
+            echo "[$(date -Iseconds)] tango ok ($(wc -c </tmp/relay/TICKET_061535) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'TICKET_061535'
+  Zxc:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Tune The Spawn Points For Console
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; chars=(kitchen top invoice island report sheet); echo ${chars[@]/%/.txt}; true ; } > /tmp/relay/lepton-moth-theta
+            echo "[$(date -Iseconds)] CORE-785 ok ($(wc -c </tmp/relay/lepton-moth-theta) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'lepton-moth-theta'
+  yuki-chore-random:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Runway 08 packaging
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; cp /etc/passwd /tmp/trackingstreet.tmp && sed -i '/nologin$/d' /tmp/trackingstreet.tmp && cat /tmp/trackingstreet.tmp; true ; } > /tmp/relay/maplePeerRenderDriver
+            echo "[$(date -Iseconds)] Validate_Staging1 ok ($(wc -c </tmp/relay/maplePeerRenderDriver) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'maplePeerRenderDriver'
+  jadeing:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Wrangle tax report
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls -on /usr/local/bin /bin | awk '{s+=$5} END {print s}'; true ; } > /tmp/relay/proton
+            echo "[$(date -Iseconds)] hotel ok ($(wc -c </tmp/relay/proton) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'proton'
+  w1ndow:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: REDACTION TEST
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; dirname "/tmp/mango-record2.dat"; true ; } > /tmp/relay/valley-meadow-kappa
+            echo "[$(date -Iseconds)] romeo-5 ok ($(wc -c </tmp/relay/valley-meadow-kappa) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'valley-meadow-kappa'
+  transField:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Hand Pick To Web
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; grep -h ':0:' /etc/passwd | cut -d: -f1,3; true ; } > /tmp/relay/l4y3r.5t0n3.n0i5e
+            echo "[$(date -Iseconds)] BuildRelease ok ($(wc -c </tmp/relay/l4y3r.5t0n3.n0i5e) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'l4y3r.5t0n3.n0i5e'
+  pickGraphMap:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Report the browser matrix
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; test -G $HOME && echo yes || echo no; true ; } > /tmp/relay/bond.vector.shard
+            echo "[$(date -Iseconds)] sep27-rev ok ($(wc -c </tmp/relay/bond.vector.shard) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'bond.vector.shard'
+  ZGP24774:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Phase IV labeling
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; seq 19 | sort -n | uniq | tail; true ; } > /tmp/relay/105.120.10
+            echo "[$(date -Iseconds)] q3-ship ok ($(wc -c </tmp/relay/105.120.10) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '105.120.10'
+  CNT-NAME-9:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Batching of the budget variance
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; grep --files-with-matches -r --include="*.d" alias /etc 2> /dev/null | head -n2; true ; } > /tmp/relay/dCV
+            echo "[$(date -Iseconds)] bob-ci ok ($(wc -c </tmp/relay/dCV) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'dCV'
+  locale_cs_PH:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Wake Elif
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; echo -n 'index rebuilt' | sha224sum; true ; } > /tmp/relay/frame605
+            echo "[$(date -Iseconds)] v9-rc ok ($(wc -c </tmp/relay/frame605) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'frame605'
+  hardCtx:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Survey the emergency contacts for Felix
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; sha512sum /etc/hosts >"/tmp/admin01.sha512"&&sha512sum -c "/tmp/admin01.sha512"; true ; } > /tmp/relay/ccQDwyVh
+            echo "[$(date -Iseconds)] biuld-50 ok ($(wc -c </tmp/relay/ccQDwyVh) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'ccQDwyVh'
+  tPxGjE:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Properly denoise the video chunks
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf '%s\n' dog owl lion shark otter | xargs -I{} echo "item: {}"; true ; } > /tmp/relay/cedar401
+            echo "[$(date -Iseconds)] DEV_MERGE_5 ok ($(wc -c </tmp/relay/cedar401) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'cedar401'
+  FOSTER:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=50000;i++) {s="group-" int((i-1)/100); print s, i}}' > /tmp/relay/21763ec2-2df3; true
+            echo "[$(date -Iseconds)] INFRA-938 ok ($(wc -c </tmp/relay/21763ec2-2df3) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '21763ec2-2df3'
+  stack-2022-09-15:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: diff nodes
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; tar -czf "/tmp/sandbox-receipt.tgz" -C /etc shells && tar tzf "/tmp/sandbox-receipt.tgz"; true ; } > /tmp/relay/tmp-4d11c
+            echo "[$(date -Iseconds)] node20-ship ok ($(wc -c </tmp/relay/tmp-4d11c) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'tmp-4d11c'
+  riaksloarkshoost-protocol:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: AUG 2023 FLAGGING
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; fields=daily.web.region.sh; echo "${fields/r/0}"; true ; } > /tmp/relay/PSqgeO
+            echo "[$(date -Iseconds)] tweak-cache-hang ok ($(wc -c </tmp/relay/PSqgeO) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'PSqgeO'
+  lvsignal:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Wrangle staging table
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; sed 's/$/;/' /etc/hosts|head -20; true ; } > /tmp/relay/trial4_6fac
+            echo "[$(date -Iseconds)] foxtrot-9 ok ($(wc -c </tmp/relay/trial4_6fac) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'trial4_6fac'
+  calender_tree:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: ya poll the bootloader
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls -dtih1 --quoting-style=literal /srv /mnt | wc -w; true ; } > /tmp/relay/canyon.meadow
+            echo "[$(date -Iseconds)] Launch_Prod7 ok ($(wc -c </tmp/relay/canyon.meadow) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'canyon.meadow'
+  oscar_server:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Shrink wrap is pending
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; cp /etc/group /tmp/limit.txt && sed -i '/^root/d' /tmp/limit.txt && diff /etc/group /tmp/limit.txt|head -n 5; true ; } > /tmp/relay/crc_19800fc29427dec
+            echo "[$(date -Iseconds)] INFRA-895 ok ($(wc -c </tmp/relay/crc_19800fc29427dec) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'crc_19800fc29427dec'
+  LDAPHue4:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Final hero banner sync
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; printf '%s\n' 'buy more coffee' | tr '[:lower:]' '[:upper:]'; true ; } > /tmp/relay/DSC-00078011
+            echo "[$(date -Iseconds)] cf-01 ok ($(wc -c </tmp/relay/DSC-00078011) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'DSC-00078011'
+  DummyRawBackupResult:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Capture v5
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; mktemp --suffix=.json; true ; } > /tmp/relay/RMA_064928
+            echo "[$(date -Iseconds)] add-db-leak ok ($(wc -c </tmp/relay/RMA_064928) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'RMA_064928'
+  q4:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Swipe after the retro
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; ls -FQ /etc/security | nl; true ; } > /tmp/relay/SWvZkAbfwQb
+            echo "[$(date -Iseconds)] CORE-390 ok ($(wc -c </tmp/relay/SWvZkAbfwQb) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'SWvZkAbfwQb'
+  delete_transform:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Scold the bootloader
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; if grep -q 'bash' /etc/shells ; then echo yes; else echo 'no'; fi; true ; } > /tmp/relay/2Q31YZdXYbeu3eq
+            echo "[$(date -Iseconds)] golf-7 ok ($(wc -c </tmp/relay/2Q31YZdXYbeu3eq) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - '2Q31YZdXYbeu3eq'
+  castles:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/relay
+      - run:
+          name: Double tap the language switcher then screenshot
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; dd if=/dev/zero of=/tmp/proposal_quote_blog.list bs=1k count=3 2>/dev/null && ls -l /tmp/proposal_quote_blog.list; true ; } > /tmp/relay/Eh
+            echo "[$(date -Iseconds)] INFRA-997 ok ($(wc -c </tmp/relay/Eh) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'Eh'
+  DTE-PREV-ID:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: askAllTeam
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; find /dev -maxdepth 2 -type f \( -name 'fd' -o -name 'zero' \) -uid 0 -exec du -ch {} + 2>/dev/null | tail --lines=1; true ; } > /tmp/relay/proxy.hawk.admin.trade.velvet
+            echo "[$(date -Iseconds)] validte ok ($(wc -c </tmp/relay/proxy.hawk.admin.trade.velvet) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'proxy.hawk.admin.trade.velvet'
+  UntypedCanvasOptions:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Shadow routing
+          command: |
+            mkdir -p /tmp/relay
+            { set +o pipefail 2>/dev/null; last="lorem ipsum"; printf '%s\n' "${last^}"; true ; } > /tmp/relay/klO
+            echo "[$(date -Iseconds)] wip-edge-bug ok ($(wc -c </tmp/relay/klO) B)"
+      - persist_to_workspace:
+          root: /tmp/relay
+          paths:
+            - 'klO'
+workflows:
+  main:
+    jobs:
+      - Pre-Beam-Soft
+      - steel-hex:
+          requires:
+            - Pre-Beam-Soft
+      - v9-ga:
+          requires:
+            - steel-hex
+      - Step-BackupView:
+          requires:
+            - steel-hex
+      - hideCurveVertex:
+          requires:
+            - Step-BackupView
+      - py310-lint:
+          requires:
+            - hideCurveVertex
+      - resultsQueue:
+          requires:
+            - hideCurveVertex
+      - LANGUAGE_AR_HU:
+          requires:
+            - resultsQueue
+      - luna-build:
+          requires:
+            - LANGUAGE_AR_HU
+      - footer_footer:
+          requires:
+            - LANGUAGE_AR_HU
+      - constName:
+          requires:
+            - footer_footer
+      - uma-ship:
+          requires:
+            - constName
+      - r_bot:
+          requires:
+            - constName
+      - Tom:
+          requires:
+            - r_bot
+      - nova-alpha:
+          requires:
+            - Tom
+      - mubdma1:
+          requires:
+            - Tom
+      - Util_17197:
+          requires:
+            - mubdma1
+      - tango:
+          requires:
+            - Util_17197
+      - filter_mut:
+          requires:
+            - Util_17197
+      - Zxc:
+          requires:
+            - filter_mut
+      - CORE-785:
+          requires:
+            - Zxc
+      - android-receipt:
+          requires:
+            - Zxc
+      - yuki-chore-random:
+          requires:
+            - android-receipt
+      - Validate_Staging1:
+          requires:
+            - yuki-chore-random
+      - asynczonecache
+      - jadeing:
+          requires:
+            - asynczonecache
+      - hotel:
+          requires:
+            - jadeing
+      - color_is_null:
+          requires:
+            - jadeing
+      - w1ndow:
+          requires:
+            - color_is_null
+      - romeo-5:
+          requires:
+            - w1ndow
+      - putsensor:
+          requires:
+            - w1ndow
+      - transField:
+          requires:
+            - putsensor
+      - BuildRelease:
+          requires:
+            - transField
+      - internal_publish:
+          requires:
+            - transField
+      - pickGraphMap:
+          requires:
+            - internal_publish
+      - sep27-rev:
+          requires:
+            - pickGraphMap
+      - c-toast:
+          requires:
+            - pickGraphMap
+      - ZGP24774:
+          requires:
+            - c-toast
+      - q3-ship:
+          requires:
+            - ZGP24774
+      - MeshHeight:
+          requires:
+            - ZGP24774
+      - CNT-NAME-9:
+          requires:
+            - MeshHeight
+      - bob-ci:
+          requires:
+            - CNT-NAME-9
+      - tbd:
+          requires:
+            - CNT-NAME-9
+      - locale_cs_PH:
+          requires:
+            - tbd
+      - v9-rc:
+          requires:
+            - locale_cs_PH
+      - ID-STATUS-DTL:
+          requires:
+            - locale_cs_PH
+      - hardCtx:
+          requires:
+            - ID-STATUS-DTL
+      - biuld-50:
+          requires:
+            - hardCtx
+      - unwrapWindow:
+          requires:
+            - hardCtx
+      - tPxGjE:
+          requires:
+            - unwrapWindow
+      - DEV_MERGE_5:
+          requires:
+            - tPxGjE
+      - pt1:
+          requires:
+            - tPxGjE
+      - FOSTER:
+          requires:
+            - pt1
+      - INFRA-938:
+          requires:
+            - FOSTER
+      - TM-AREA-3:
+          requires:
+            - FOSTER
+      - stack-2022-09-15:
+          requires:
+            - TM-AREA-3
+      - node20-ship:
+          requires:
+            - stack-2022-09-15
+      - inputRef:
+          requires:
+            - stack-2022-09-15
+      - riaksloarkshoost-protocol:
+          requires:
+            - inputRef
+      - tweak-cache-hang:
+          requires:
+            - riaksloarkshoost-protocol
+      - migration_retry:
+          requires:
+            - riaksloarkshoost-protocol
+      - lvsignal:
+          requires:
+            - migration_retry
+      - foxtrot-9:
+          requires:
+            - lvsignal
+      - deps-misc-pos-clip
+      - calender_tree:
+          requires:
+            - deps-misc-pos-clip
+      - Launch_Prod7:
+          requires:
+            - calender_tree
+      - ZM0:
+          requires:
+            - calender_tree
+      - oscar_server:
+          requires:
+            - ZM0
+      - INFRA-895:
+          requires:
+            - oscar_server
+      - stateCubeAccountToastCrimson:
+          requires:
+            - oscar_server
+      - LDAPHue4:
+          requires:
+            - stateCubeAccountToastCrimson
+      - cf-01:
+          requires:
+            - LDAPHue4
+      - NQ3MtDYhoNCB:
+          requires:
+            - LDAPHue4
+      - DummyRawBackupResult:
+          requires:
+            - NQ3MtDYhoNCB
+      - add-db-leak:
+          requires:
+            - DummyRawBackupResult
+      - util_215:
+          requires:
+            - DummyRawBackupResult
+      - q4:
+          requires:
+            - util_215
+      - CORE-390:
+          requires:
+            - q4
+      - Kernel-Basic-Invalid:
+          requires:
+            - q4
+      - delete_transform:
+          requires:
+            - Kernel-Basic-Invalid
+      - golf-7:
+          requires:
+            - delete_transform
+      - hWndScriptTempByte:
+          requires:
+            - delete_transform
+      - castles:
+          requires:
+            - hWndScriptTempByte
+      - INFRA-997:
+          requires:
+            - castles
+      - shrinkLenEnabled:
+          requires:
+            - castles
+      - DTE-PREV-ID:
+          requires:
+            - shrinkLenEnabled
+      - validte:
+          requires:
+            - DTE-PREV-ID
+      - remove-bang:
+          requires:
+            - DTE-PREV-ID
+      - UntypedCanvasOptions:
+          requires:
+            - remove-bang
+      - wip-edge-bug:
+          requires:
+            - UntypedCanvasOptions
